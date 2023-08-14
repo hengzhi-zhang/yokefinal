@@ -1,4 +1,17 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
+import 'chat_screen.dart';
+import 'friends_page.dart';
+import 'package:yoke_app4/person.dart';
+
+final List<Person> people = [
+  Person(name: 'Hengzhi Zhang', imageUrl: '/Users/hengzhi/Downloads/IMG_4800.JPG'),
+  Person(name: 'Robert Pham', imageUrl: '/Users/hengzhi/Downloads/IMG_0783.JPG'),
+  Person(name: 'Andrew Wang', imageUrl: '/Users/hengzhi/Downloads/Screenshot_20170112-153230.png'),
+  Person(name: 'Morgan Handojo', imageUrl: '/Users/hengzhi/Downloads/FullSizeRender.jpeg'),
+  Person(name: 'Jaden Yi', imageUrl: '/Users/hengzhi/Downloads/IMG_2458.jpg'),
+  // ... same list of people
+];
 
 class HomePage extends StatefulWidget {
   @override
@@ -6,41 +19,36 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final daysOfWeek = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday'
-  ];
-  final selectedTimeSlots = {};
-
-  @override
-  void initState() {
-    super.initState();
-    for (var day in daysOfWeek) {
-      selectedTimeSlots[day] = TimeSlot();
-    }
-  }
-
-  Future<void> _selectTime(BuildContext context, TimeSlot timeSlot, bool isStartTime) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
-    if (picked != null)
-      setState(() {
-        if (isStartTime) {
-          timeSlot.startTime = picked;
-        } else {
-          timeSlot.endTime = picked;
-        }
-      });
-  }
 
   void _findPartner() {
+    // Create a list of potential matches excluding those already in globalMatchedPartners
+    List<Person> potentialMatches = people.where((person) => !globalMatchedPartners.contains(person)).toList();
+    
+    if (potentialMatches.isEmpty) {
+      // Handle case where there are no more potential matches
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('No More Matches'),
+            content: Text('You have chatted with everyone!'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Okay', style: TextStyle(color: Colors.black)),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
+    final randomIndex = Random().nextInt(potentialMatches.length);
+    final partner = potentialMatches[randomIndex];
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -50,11 +58,11 @@ class _HomePageState extends State<HomePage> {
             children: <Widget>[
               CircleAvatar(
                 radius: 50,
-                backgroundImage: AssetImage('/Users/hengzhi/Downloads/IMG_4800.JPG'), // or NetworkImage(url)
+                backgroundImage: AssetImage(partner.imageUrl),
               ),
               SizedBox(height: 20),
               Text(
-                'Partner found: Hengzhi Zhang',
+                'Partner found: ${partner.name}',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -64,6 +72,20 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           actions: <Widget>[
+            TextButton(
+              child: Text('Chat', style: TextStyle(color: Colors.black)),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ChatScreen(partnerName: partner.name),
+                  ),
+                );
+                if (!globalMatchedPartners.contains(partner)) {
+                  globalMatchedPartners.add(partner);
+                }
+              },
+            ),
             TextButton(
               child: Text('Close', style: TextStyle(color: Colors.black)),
               onPressed: () {
@@ -81,66 +103,40 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Home Page'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.group),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => FriendsPage(matchedPartners: globalMatchedPartners),
+                ),
+              );
+            },
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            ElevatedButton(
-              onPressed: _findPartner,
-              child: Text('Find a Partner', style: TextStyle(color: Colors.black)), // Setting the text color to black
-              style: ElevatedButton.styleFrom(
-                primary: Colors.white, // This is the button color
-              ),
-            ),
-            SizedBox(height: 20),
-            Expanded(
-              child: ListView.builder(
-                itemCount: daysOfWeek.length,
-                itemBuilder: (context, index) {
-                  String day = daysOfWeek[index];
-                  return ListTile(
-                    title: Text(day),
-                    subtitle: Row(
-                      children: [
-                        ElevatedButton(
-  onPressed: () => _selectTime(context, selectedTimeSlots[day], true),
-  child: Text(selectedTimeSlots[day].startTime?.format(context) ?? "Start Time", style: TextStyle(color: Colors.black)),
-  style: ElevatedButton.styleFrom(primary: Colors.white),
-),
-                        SizedBox(width: 10),
-                        ElevatedButton(
-  onPressed: () => _selectTime(context, selectedTimeSlots[day], false),
-  child: Text(selectedTimeSlots[day].endTime?.format(context) ?? "End Time", style: TextStyle(color: Colors.black)),
-  style: ElevatedButton.styleFrom(primary: Colors.white),
-),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
+      body: Center(
+        child: ElevatedButton(
+          onPressed: _findPartner,
+          child: Text(
+            'Find a Partner',
+            style: TextStyle(color: Colors.black, fontSize: 20),
+          ),
+          style: ElevatedButton.styleFrom(
+            primary: Colors.white, // This is the button color
+            padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Logic to save the data goes here.
-          print(selectedTimeSlots);
-        },
-        child: Icon(Icons.save),
       ),
     );
   }
 }
 
-class TimeSlot {
-  TimeOfDay? startTime;
-  TimeOfDay? endTime;
-  TimeSlot({this.startTime, this.endTime});
-}
-
 void main() => runApp(MaterialApp(home: HomePage()));
+
+
+
 
 
 

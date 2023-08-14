@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'screens/home_page.dart';  // Ensure paths are correct
 import 'screens/friends_page.dart';
 import 'screens/settings_page.dart';
-import 'screens/splash_screen.dart';  // This assumes you have created splash_screen.dart as shown in a previous answer.
+import 'screens/splash_screen.dart';
+import 'person.dart'; // This assumes you have created splash_screen.dart as shown in a previous answer.
 
 void main() {
   runApp(const MyApp());
@@ -44,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final List<Widget> _pages = [
     HomePage(),
-    FriendsPage(),
+    FriendsPage(matchedPartners: globalMatchedPartners),
     SettingsPage(),
   ];
 
@@ -65,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Friends'),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Matches'),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
         ],
       ),
