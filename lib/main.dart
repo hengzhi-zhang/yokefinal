@@ -5,8 +5,15 @@ import 'screens/settings_page.dart';
 import 'screens/splash_screen.dart';
 import 'person.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'auth.dart';
+import 'screens/auth_screen.dart' show AuthScreen, ProfileScreen;
+import 'package:firebase_ui_auth/firebase_ui_auth.dart' as firebaseUI;
+import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
+import 'screens/settings_pages/userProfiles_page.dart';
+import 'screens/settings_pages/preferences_page.dart';
+import 'screens/settings_pages/about_page.dart';
+import 'screens/settings_pages/feedback_page.dart';
 
 
 
@@ -17,34 +24,43 @@ void main() async {
   await Firebase.initializeApp(
     options: FirebaseOptions(
       apiKey: 'AIzaSyD4v7aJO6mnJ-WL-d1QFLNX8CmXRMRLhxM',
-    appId: '1:1074506106271:ios:ade2ea51437bc60aeca9aa',
-    messagingSenderId: '1074506106271',
-    projectId: 'yoke-f9158',
-    storageBucket: 'yoke-f9158.appspot.com',
-    iosClientId: '1074506106271-baoj226s7ntnjjdabta215ebceu2062b.apps.googleusercontent.com',
-    iosBundleId: 'com.example.yokeApp4'
+      appId: '1:1074506106271:ios:ade2ea51437bc60aeca9aa',
+      messagingSenderId: '1074506106271',
+      projectId: 'yoke-f9158',
+      storageBucket: 'yoke-f9158.appspot.com',
+      iosClientId: '1074506106271-baoj226s7ntnjjdabta215ebceu2062b.apps.googleusercontent.com',
+      iosBundleId: 'com.example.yokeApp4'
     ),
   );
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
+    // Check authentication status
+    final initialRoute = FirebaseAuth.instance.currentUser == null ? '/sign-in' : '/home';
+
     return MaterialApp(
       title: 'Yoke',
       theme: ThemeData(
-        colorScheme: ColorScheme.light(primary: Colors.yellow),
+        colorScheme: ColorScheme.light(primary: const Color.fromARGB(255, 223, 202, 7),),
         useMaterial3: true,
       ),
-      
-      initialRoute: '/',
+      initialRoute: initialRoute,
       routes: {
-        '/': (context) => SplashScreen(), 
+        '/': (context) => AuthScreen(),
+        '/sign-in': (context) => AuthScreen(),
+        '/profile': (context) => firebaseUI.ProfileScreen(
+          providers: [firebaseUI.EmailAuthProvider()],
+          actions: [],
+        ),
         '/home': (context) => MyHomePage(title: 'Yoke'),
-        // add other routes if needed
+        '/user-profile': (context) => UserProfilePage(),
+        '/preferences': (context) => PreferencesPage(),
+        '/about': (context) => AboutPage(),
+        '/feedback': (context) => FeedbackPage(),
+        '/settings': (context) => SettingsPage(),
       },
     );
   }
@@ -74,6 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Colors.yellow,
         title: Text(widget.title),
+        automaticallyImplyLeading: false,
       ),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(

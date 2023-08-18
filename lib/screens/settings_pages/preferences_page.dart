@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'new_multiselect_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';  // Import this package
+import 'package:yoke_app4/main.dart';  // Import this package
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class PreferencesPage extends StatefulWidget {
   @override
@@ -9,7 +13,12 @@ class PreferencesPage extends StatefulWidget {
 class _PreferencesPageState extends State<PreferencesPage> {
   List<String> _preferredGenders = ["Any"];
   String _preferredLocation = "Running";
-  bool _isDarkMode = false;
+
+  // Sign out method
+  void _signOut() async {
+    await FirebaseAuth.instance.signOut();
+    Navigator.of(context).pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +33,7 @@ class _PreferencesPageState extends State<PreferencesPage> {
             // Match Preferences
             ListTile(
               title: Text('Preferred Gender', style: TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: MultiSelectDropdown(  // Using it as a subtitle instead of trailing
+              subtitle: MultiSelectDropdown(
                 items: ['Men', 'Women', 'Non-Binary', 'Any'],
                 selectedItems: _preferredGenders,
                 onSelectionChanged: (selectedList) {
@@ -34,71 +43,41 @@ class _PreferencesPageState extends State<PreferencesPage> {
                 },
               ),
             ),
-            ListTile(
-              title: Text('Preferred Activity', style: TextStyle(fontWeight: FontWeight.bold)),
-              trailing: DropdownButton<String>(
-                value: _preferredLocation,
-                items: <String>['Running', 'Workout'].map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                onChanged: (newValue) {
-                  setState(() {
-                    _preferredLocation = newValue!;
-                  });
-                },
-              ),
-            ),
-
+            
             Divider(),
 
-            // Theme & Appearance
-            ListTile(
-              title: Text('Dark Mode', style: TextStyle(fontWeight: FontWeight.bold)),
-              trailing: Switch(
-                value: _isDarkMode,
-                onChanged: (value) {
-                  setState(() {
-                    _isDarkMode = value;
-                  });
-                },
-              ),
+            // Save Preferences Button
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20.0),
+              child: ElevatedButton(
+  onPressed: () {
+    // Navigate to Home Page after preferences are set
+    Navigator.pushNamed(context, '/home');
+  },
+  child: Text(
+    'Save Preferences & Proceed',
+    style: TextStyle(color: Colors.black),
+  ),
+  style: ElevatedButton.styleFrom(
+    primary: Colors.white, // This sets the background color of the button
+    onPrimary: Colors.black, // This sets the color of the text
+  ),
+),
             ),
 
-            Divider(),
-
-            // Safety Guidelines
-            ListTile(
-              leading: Icon(Icons.security),
-              title: Text('Safety Guidelines'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SafetyGuidelinesPage()),
-                );
-              },
+            // Sign Out Button
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20.0),
+              child: ElevatedButton(
+                onPressed: _signOut,
+                child: Text('Sign Out'),
+                style: ElevatedButton.styleFrom(
+    primary: Colors.white, // This sets the background color of the button
+    onPrimary: Colors.black, // This sets the color of the text
+  ),
+              ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class SafetyGuidelinesPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Safety Guidelines'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Text(
-          'Here, you can list out all your safety guidelines and best practices for users.',
-          style: TextStyle(fontSize: 18),
         ),
       ),
     );

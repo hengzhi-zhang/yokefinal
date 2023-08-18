@@ -15,7 +15,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigateToHome() async {
-    await Future.delayed(Duration(seconds: 3));  // Simulate a network request or initial setup with a 3 second delay
+    await Future.delayed(Duration(seconds: 2));  // Simulate a network request or initial setup with a 3 second delay
     Navigator.of(context).pushReplacementNamed('/home');  // Assumes '/home' is your home page's route name
   }
 

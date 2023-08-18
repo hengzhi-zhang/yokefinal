@@ -15,7 +15,10 @@ class _FriendsPageState extends State<FriendsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Matches')),
+      appBar: AppBar(
+        title: Text('Matches'),
+        automaticallyImplyLeading: false, // Add this line
+      ),
       body: (widget.matchedPartners.isEmpty)
           ? Center(child: Text('No matches found.'))
           : ListView.builder(
@@ -31,7 +34,7 @@ class _FriendsPageState extends State<FriendsPage> {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) =>
-                            ChatScreen(partnerName: partner.name),
+                            ChatScreen(partnerName: partner.name, partnerId: partner.userId), // Pass the userId here
                       ),
                     );
                   },

@@ -5,12 +5,11 @@ import 'friends_page.dart';
 import 'package:yoke_app4/person.dart';
 
 final List<Person> people = [
-  Person(name: 'Hengzhi Zhang', imageUrl: '/Users/hengzhi/Downloads/IMG_4800.JPG'),
-  Person(name: 'Robert Pham', imageUrl: '/Users/hengzhi/Downloads/IMG_0783.JPG'),
-  Person(name: 'Andrew Wang', imageUrl: '/Users/hengzhi/Downloads/Screenshot_20170112-153230.png'),
-  Person(name: 'Morgan Handojo', imageUrl: '/Users/hengzhi/Downloads/FullSizeRender.jpeg'),
-  Person(name: 'Jaden Yi', imageUrl: '/Users/hengzhi/Downloads/IMG_2458.jpg'),
-  // ... same list of people
+  Person(name: 'Hengzhi Zhang', imageUrl: '/Users/hengzhi/Downloads/IMG_4800.JPG', userId: 'user1'),
+  Person(name: 'Robert Pham', imageUrl: '/Users/hengzhi/Downloads/IMG_0783.JPG', userId: 'user2'),
+  Person(name: 'Andrew Wang', imageUrl: '/Users/hengzhi/Downloads/Screenshot_20170112-153230.png', userId: 'user3'),
+  Person(name: 'Morgan Handojo', imageUrl: '/Users/hengzhi/Downloads/FullSizeRender.jpeg', userId: 'user4'),
+  Person(name: 'Jaden Yi', imageUrl: '/Users/hengzhi/Downloads/IMG_2458.jpg', userId: 'user5'),
 ];
 
 class HomePage extends StatefulWidget {
@@ -19,13 +18,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   void _findPartner() {
-    // Create a list of potential matches excluding those already in globalMatchedPartners
     List<Person> potentialMatches = people.where((person) => !globalMatchedPartners.contains(person)).toList();
-    
+
     if (potentialMatches.isEmpty) {
-      // Handle case where there are no more potential matches
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -78,7 +74,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.of(context).pop();
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => ChatScreen(partnerName: partner.name),
+                    builder: (context) => ChatScreen(partnerName: partner.name, partnerId: partner.userId),
                   ),
                 );
                 if (!globalMatchedPartners.contains(partner)) {
@@ -102,19 +98,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home Page'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.group),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => FriendsPage(matchedPartners: globalMatchedPartners),
-                ),
-              );
-            },
-          ),
-        ],
+        title: Text(''),
+        automaticallyImplyLeading: false,
+        // Removed the arrow buttons
       ),
       body: Center(
         child: ElevatedButton(
@@ -124,7 +110,7 @@ class _HomePageState extends State<HomePage> {
             style: TextStyle(color: Colors.black, fontSize: 20),
           ),
           style: ElevatedButton.styleFrom(
-            primary: Colors.white, // This is the button color
+            primary: Colors.white,
             padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
           ),
         ),
@@ -133,7 +119,11 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-void main() => runApp(MaterialApp(home: HomePage()));
+// Removed MaterialApp from main function
+void main() => runApp(HomePage());
+
+
+
 
 
 

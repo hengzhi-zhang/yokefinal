@@ -10,37 +10,38 @@ class SettingsPage extends StatelessWidget {
     return ListView(
       children: [
         ListTile(
-          leading: Icon(Icons.person),
-          title: Text('User Profile'),
-          onTap: () {
-            // Navigate to User Profile details
-            Navigator.push(context, MaterialPageRoute(builder: (context) => UserProfilePage()));
-          },
-        ),
-        ListTile(
-          leading: Icon(Icons.settings),
-          title: Text('Preferences'),
-          onTap: () {
-            // Navigate to Preferences page or perform other actions
-            Navigator.push(context, MaterialPageRoute(builder: (context) => PreferencesPage()));
-          },
-        ),
-        ListTile(
-          leading: Icon(Icons.info_outline),
-          title: Text('About'),
-          onTap: () {
-            // Navigate to About page or show about details
-            Navigator.push(context, MaterialPageRoute(builder: (context) => AboutPage()));
-          },
-        ),
-        ListTile(
-          leading: Icon(Icons.feedback),
-          title: Text('Feedback'),
-          onTap: () {
-            // Navigate to Feedback form
-            Navigator.push(context, MaterialPageRoute(builder: (context) => FeedbackPage()));
-          },
-        ),
+  leading: Icon(Icons.person),
+  title: Text('User Profile'),
+  onTap: () {
+    // Navigate to User Profile details using a named route
+    Navigator.pushNamed(context, '/user-profile');
+  },
+),
+ListTile(
+  leading: Icon(Icons.settings),
+  title: Text('Preferences'),
+  onTap: () {
+    // Navigate to Preferences page using a named route
+    Navigator.pushNamed(context, '/preferences');
+  },
+),
+ListTile(
+  leading: Icon(Icons.info_outline),
+  title: Text('About'),
+  onTap: () {
+    // Navigate to About page using a named route
+    Navigator.pushNamed(context, '/about');
+  },
+),
+ListTile(
+  leading: Icon(Icons.feedback),
+  title: Text('Feedback'),
+  onTap: () {
+    // Navigate to Feedback form using a named route
+    Navigator.pushNamed(context, '/feedback');
+  },
+),
+
       ],
     );
   }
