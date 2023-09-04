@@ -2,22 +2,14 @@ import 'package:flutter/material.dart';
 import 'screens/home_page.dart';  // Ensure paths are correct
 import 'screens/friends_page.dart';
 import 'screens/settings_page.dart';
-import 'screens/splash_screen.dart';
-import 'person.dart';
+import 'screens/auth_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'auth.dart';
-import 'screens/auth_screen.dart' show AuthScreen, ProfileScreen;
-import 'package:firebase_ui_auth/firebase_ui_auth.dart' as firebaseUI;
-import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
+import 'package:firebase_auth/firebase_auth.dart';
 import 'screens/settings_pages/userProfiles_page.dart';
 import 'screens/settings_pages/preferences_page.dart';
 import 'screens/settings_pages/about_page.dart';
 import 'screens/settings_pages/feedback_page.dart';
-
-
-
- // This assumes you have created splash_screen.dart as shown in a previous answer.
+import 'bottom_navigation_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,10 +43,6 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => AuthScreen(),
         '/sign-in': (context) => AuthScreen(),
-        '/profile': (context) => firebaseUI.ProfileScreen(
-          providers: [firebaseUI.EmailAuthProvider()],
-          actions: [],
-        ),
         '/home': (context) => MyHomePage(title: 'Yoke'),
         '/user-profile': (context) => UserProfilePage(),
         '/preferences': (context) => PreferencesPage(),
@@ -79,8 +67,12 @@ class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    HomePage(),
-    FriendsPage(matchedPartners: globalMatchedPartners),
+    HomePage(
+      onNewMatch: () {
+        // You can add additional actions here if needed when a new match occurs.
+      },
+    ),
+    FriendsPage(),
     SettingsPage(),
   ];
 
@@ -113,6 +105,8 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+
 
 
 
