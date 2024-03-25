@@ -6,11 +6,13 @@ class ChatScreen extends StatefulWidget {
   final String partnerName;
   final String partnerId;
   final String partnerImageUrl; // Add this line
+  final String conversationID;
 
   ChatScreen({
     required this.partnerName,
     required this.partnerId,
     required this.partnerImageUrl, // Add this line
+    required this.conversationID,
   });
 
   @override

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'screens/home_page.dart';  // Ensure paths are correct
+import 'package:google_fonts/google_fonts.dart'; // Import Google Fonts package
+import 'screens/home_page.dart'; // Ensure paths are correct
 import 'screens/friends_page.dart';
 import 'screens/settings_page.dart';
 import 'screens/auth_screen.dart';
@@ -9,7 +10,6 @@ import 'screens/settings_pages/userProfiles_page.dart';
 import 'screens/settings_pages/preferences_page.dart';
 import 'screens/settings_pages/about_page.dart';
 import 'screens/settings_pages/feedback_page.dart';
-import 'bottom_navigation_controller.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +22,7 @@ void main() async {
       storageBucket: 'yoke-f9158.appspot.com',
       iosClientId: '1074506106271-baoj226s7ntnjjdabta215ebceu2062b.apps.googleusercontent.com',
       iosBundleId: 'com.example.yokeApp4'
+      // Your Firebase options
     ),
   );
   runApp(MyApp());
@@ -36,8 +37,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Yoke',
       theme: ThemeData(
-        colorScheme: ColorScheme.light(primary: const Color.fromARGB(255, 223, 202, 7),),
+        colorScheme: ColorScheme.light(primary: const Color.fromARGB(255, 223, 202, 7)),
         useMaterial3: true,
+        textTheme: GoogleFonts.montserratTextTheme(Theme.of(context).textTheme.copyWith(
+          // Apply bold font to all text
+          bodyText1: TextStyle(fontWeight: FontWeight.bold),
+          bodyText2: TextStyle(fontWeight: FontWeight.bold),
+          headline1: TextStyle(fontWeight: FontWeight.bold),
+          headline2: TextStyle(fontWeight: FontWeight.bold),
+          headline3: TextStyle(fontWeight: FontWeight.bold),
+          headline4: TextStyle(fontWeight: FontWeight.bold),
+          headline5: TextStyle(fontWeight: FontWeight.bold),
+          headline6: TextStyle(fontWeight: FontWeight.bold),
+        )),
       ),
       initialRoute: initialRoute,
       routes: {
@@ -92,10 +104,10 @@ class _MyHomePageState extends State<MyHomePage> {
             _currentIndex = index;
           });
         },
-        showSelectedLabels: false,  // Hide the labels for selected items
-        showUnselectedLabels: false,  // Hide the labels for unselected items
-        selectedItemColor: Colors.yellow[800],  // Dark yellow for the selected item
-        unselectedItemColor: Colors.grey,  // Default color for unselected items, you can adjust this if needed
+        showSelectedLabels: false, // Hide the labels for selected items
+        showUnselectedLabels: false, // Hide the labels for unselected items
+        selectedItemColor: Colors.yellow[800], // Dark yellow for the selected item
+        unselectedItemColor: Colors.grey, // Default color for unselected items, you can adjust this if needed
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.people), label: "Partners"),
@@ -105,8 +117,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-
 
 
 

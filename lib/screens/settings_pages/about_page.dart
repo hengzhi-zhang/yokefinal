@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 
 class AboutPage extends StatelessWidget {
+  const AboutPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('About Us'),
+        title: const Text('About Us'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView(
-          children: [
+          children: const [
             // Introduction/Mission Statement
             Text(
               'About Yoke',
@@ -46,8 +48,7 @@ class AboutPage extends StatelessWidget {
               ),
               subtitle: Text(
                 'Founder & Developer\n\n'
-                'I started this project to get some real-world experience coding a production-level app from scratch. '
-                'I love everyone :)',
+                'I started this project to get some real-world experience coding a production-level app from scratch. ',
                 style: TextStyle(fontSize: 16),
               ),
             ),

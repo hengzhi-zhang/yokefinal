@@ -45,27 +45,63 @@ class _HomePageState extends State<HomePage> {
 
       Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
       final name = userData['name'] ?? '';
-      final imageUrl = userData['imageUrl'] ?? '';
+      final imageUrl = userData['imageURL'] ?? '';
 
       matchedPartners.add(
-        Person(name: name, imageUrl: imageUrl, userId: doc.id),
+        Person(
+          name: name,
+          imageUrl: imageUrl,
+          userId: doc.id,
+          conversationIds: [], // Initialize with an empty list
+        ),
       );
     }
   }
 
-  void _findPartner() async {
-    print("Find partner button was pressed.");
-    final usersRef = FirebaseFirestore.instance.collection('users');
-    print('Getting snapshot from Firebase.');
-QuerySnapshot snapshot = await usersRef.get();
-print('Received snapshot: $snapshot');
-    final List<QueryDocumentSnapshot> usersDocs = snapshot.docs;
-
+  Future<void> _findPartner() async {
     User? user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       return;
     }
     final userId = user.uid;
+
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .get();
+
+    Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+    final lastMatchDate = userData['lastMatchDate'] as Timestamp?;
+
+    if (lastMatchDate != null) {
+      final today = DateTime.now();
+      final lastMatchDay = DateTime.fromMillisecondsSinceEpoch(lastMatchDate.millisecondsSinceEpoch).day;
+
+      if (today.day == lastMatchDay) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Already Matched Today'),
+              content: Text('You have already matched with someone today.'),
+              actions: [
+                TextButton(
+                  child: Text('Close'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+        return;
+      }
+    }
+
+    final usersRef = FirebaseFirestore.instance.collection('users');
+    QuerySnapshot snapshot = await usersRef.get();
+    final List<QueryDocumentSnapshot> usersDocs = snapshot.docs;
 
     final alreadyMatchedIds = matchedPartners.map((partner) => partner.userId).toList();
     final filteredUsersDocs = usersDocs.where((doc) => !alreadyMatchedIds.contains(doc.id) && doc.id != userId).toList();
@@ -92,23 +128,28 @@ print('Received snapshot: $snapshot');
       return;
     }
 
-    
     final randomIndex = Random().nextInt(filteredUsersDocs.length);
     final randomUserDoc = filteredUsersDocs[randomIndex];
-    print("Randomly selected user doc: $randomUserDoc");
-    final userData = randomUserDoc.data() as Map<String, dynamic>;
-    print("User data of selected doc: $userData");
+    final userData2 = randomUserDoc.data() as Map<String, dynamic>;
 
-    final name = userData['name'] ?? '';
-    final imageURL = userData['imageURL'] ?? '';
-    print(imageURL);
+    final name = userData2['name'] ?? '';
+    final imageURL = userData2['imageURL'] ?? '';
+    final partnerId = randomUserDoc.id; // Store the partner's ID
 
-    Person newMatch = Person(name: name, imageUrl: imageURL, userId: randomUserDoc.id);
+    // Generate a conversation ID based on the user's ID and partner's ID
+    final conversationId = '${userId}_$partnerId';
+
+    Person newMatch = Person(name: name, imageUrl: imageURL, userId: partnerId, conversationIds: [conversationId]);
     matchedPartners.add(newMatch);
 
-    await FirebaseFirestore.instance.collection('users').doc(userId).collection('matches').doc(randomUserDoc.id).set({
-      'matchId': randomUserDoc.id,
+    await FirebaseFirestore.instance.collection('users').doc(userId).collection('matches').doc(partnerId).set({
+      'matchId': partnerId,
       'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    // Update last match date
+    await FirebaseFirestore.instance.collection('users').doc(userId).update({
+      'lastMatchDate': FieldValue.serverTimestamp(),
     });
 
     // Call onNewMatch to notify of the new match
@@ -116,11 +157,11 @@ print('Received snapshot: $snapshot');
 
     // Refresh UI and show the new match dialog
     setState(() {
-      _showNewMatchDialog(context, newMatch);
+      _showNewMatchDialog(context, newMatch, conversationId);
     });
   }
 
-  void _showNewMatchDialog(BuildContext context, Person newMatch) {
+  void _showNewMatchDialog(BuildContext context, Person newMatch, String conversationId) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -131,10 +172,15 @@ print('Received snapshot: $snapshot');
             children: [
               Text('You have a new match with ${newMatch.name}.'),
               SizedBox(height: 16),
-              CachedNetworkImage(
-                imageUrl: newMatch.imageUrl,
-                placeholder: (context, url) => CircularProgressIndicator(),
-                errorWidget: (context, url, error) => Icon(Icons.error),
+              Container(
+                width: 120,
+                height: 120,
+                child: CachedNetworkImage(
+                  imageUrl: newMatch.imageUrl,
+                  placeholder: (context, url) => CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                  fit: BoxFit.cover,
+                ),
               ),
             ],
           ),
@@ -148,7 +194,8 @@ print('Received snapshot: $snapshot');
                     builder: (context) => ChatScreen(
                       partnerName: newMatch.name,
                       partnerId: newMatch.userId,
-                      partnerImageUrl: newMatch.imageUrl,  // Pass the partner's image URL
+                      partnerImageUrl: newMatch.imageUrl,
+                      conversationID: conversationId, // Pass the conversation ID here
                     ),
                   ),
                 );
@@ -178,10 +225,9 @@ print('Received snapshot: $snapshot');
           onPressed: _findPartner,
           child: Text(
             'Find a Partner',
-            style: TextStyle(color: Colors.black, fontSize: 20),
+            style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
           ),
           style: ElevatedButton.styleFrom(
-            primary: Colors.white,
             padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20),
           ),
         ),
@@ -189,6 +235,12 @@ print('Received snapshot: $snapshot');
     );
   }
 }
+
+
+
+
+
+
 
 
 

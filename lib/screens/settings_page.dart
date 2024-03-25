@@ -1,8 +1,4 @@
-import 'package:flutter/material.dart';
-import 'settings_pages/feedback_page.dart';
-import 'settings_pages/userProfiles_page.dart';
-import 'settings_pages/about_page.dart';
-import 'settings_pages/preferences_page.dart';  // Import the new user profile page here
+import 'package:flutter/material.dart'; // Import the new user profile page here
 
 class SettingsPage extends StatelessWidget {
   @override
