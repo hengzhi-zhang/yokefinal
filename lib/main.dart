@@ -16,7 +16,7 @@ void main() async {
   await Firebase.initializeApp(
     options: FirebaseOptions(
       apiKey: 'AIzaSyD4v7aJO6mnJ-WL-d1QFLNX8CmXRMRLhxM',
-      appId: '1:1074506106271:ios:ade2ea51437bc60aeca9aa',
+      appId: '',
       messagingSenderId: '1074506106271',
       projectId: 'yoke-f9158',
       storageBucket: 'yoke-f9158.appspot.com',
